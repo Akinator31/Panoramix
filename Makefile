@@ -1,5 +1,6 @@
 SRC_DIR     	=	src
 BUILD_DIR   	=	build
+BUILD_DEBUG 	=	build-debug
 INCLUDE_DIRS	=	includes
 
 SRC          	=	$(shell find $(SRC_DIR) -name "*.c")
@@ -7,36 +8,49 @@ INCLUDE_SRC		=	$(shell find $(INCLUDE_DIRS) -type d)
 
 CC           	= 	epiclang
 OBJ          	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
+OBJ_DEBUG    	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DEBUG)/%.o)
 
 INCLUDE      	= 	$(INCLUDE_SRC:%=-I%)
 CFLAGS       	= 	-Wall -Wextra $(INCLUDE)
+DEBUG_FLAGS  	= 	-fsanitize=address -g3 -pg $(CFLAGS)
 
 NAME         	= 	panoramix
+DEBUG_NAME   	= 	debug
 
-COLOR_RED		=	\e[1;34m
-COLOR_GREEN		=	\e[1;32m
-COLOR_RESET		=	\e[0m
+COLOR_RED    = \033[1;31m
+COLOR_GREEN  = \033[1;32m
+COLOR_RESET  = \033[0m
 
 all: $(NAME)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
-	@echo "$(COLOR_RED)Building $<$(COLOR_RESET)"
+	@printf "$(COLOR_RED)Building $<$(COLOR_RESET)\n"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
+$(BUILD_DEBUG)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@printf "$(COLOR_RED)Building $<$(COLOR_RESET)\n"
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+$(DEBUG_NAME): $(OBJ_DEBUG) $(LIB_OBJ)
+	@printf "$(COLOR_RED)Linking $(NAME)$(COLOR_RESET)\n"
+	@$(CC) -o $(DEBUG_NAME) $(OBJ_DEBUG) $(LIB_OBJ) $(DEBUG_FLAGS)
+	@printf "$(COLOR_GREEN)Project built successfully!$(COLOR_RESET)\n"
+
 $(NAME): $(OBJ) $(LIB_OBJ)
-	@echo "$(COLOR_RED)Linking $(NAME)$(COLOR_RESET)"
+	@printf "$(COLOR_RED)Linking $(NAME)$(COLOR_RESET)\n"
 	@$(CC) -o $(NAME) $(OBJ) $(LIB_OBJ) $(CFLAGS)
-	@echo "$(COLOR_GREEN)Project built successfully!$(COLOR_RESET)"
+	@printf "$(COLOR_GREEN)Project built successfully!$(COLOR_RESET)\n"
 
 clean:
-	@$(RM) wolf3D debug tests_wolf3D
-	@echo "$(COLOR_GREEN)Object files cleaned!$(COLOR_RESET)"
+	@$(RM) panoramix debug
+	@printf "$(COLOR_GREEN)Object files cleaned!$(COLOR_RESET)\n"
 
 fclean: clean
 	@$(RM) $(NAME)
 	@$(RM) -r $(BUILD_DIR)
-	@echo "$(COLOR_GREEN)Project cleaned!$(COLOR_RESET)"
+	@printf "$(COLOR_GREEN)Project cleaned!$(COLOR_RESET)\n"
 
 re: fclean all
 

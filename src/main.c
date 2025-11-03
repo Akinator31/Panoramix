@@ -19,6 +19,7 @@ void *print_via_thread(void *raw_data)
     panoramix_t *data = (panoramix_t *)raw_data;
 
     printf("Hey, here is my thread number : %lu. Data pointer : %p\n", thread, data);
+    return NULL;
 }
 
 int panoramix(panoramix_params_t *params)
@@ -27,7 +28,7 @@ int panoramix(panoramix_params_t *params)
     pthread_t **villagers_threads = init_villagers_threads(params);
 
     for (int i = 0; i < params->nb_villagers; i++) {
-        if (pthread_create(&villagers_threads[i], NULL, print_via_thread, data) != 0) {
+        if (pthread_create(villagers_threads[i], NULL, print_via_thread, data) != 0) {
             free(data);
             return 84;
         }
@@ -41,6 +42,7 @@ int panoramix(panoramix_params_t *params)
         return 84;
     free(data);
     free(villagers_threads);
+    return 0;
 }
 
 int main(int argc, char **argv)

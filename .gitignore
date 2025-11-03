@@ -1,0 +1,7 @@
+*.out
+panoramix
+debug
+*.json
+.vscode/
+build
+build-debug
