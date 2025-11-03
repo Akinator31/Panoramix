@@ -1,0 +1,39 @@
+/*
+** EPITECH PROJECT, 2025
+** Panoramix
+** File description:
+** No file there, just an epitech header example .
+** You can even have multiple lines if you want !
+*/
+
+#ifndef UNTITLED_PANORAMIX_H
+    #define UNTITLED_PANORAMIX_H
+    #include <semaphore.h>
+    #include <pthread.h>
+
+typedef struct panoramix_params_s {
+    int nb_villagers;
+    int pot_size;
+    int nb_fights;
+    int nb_refills;
+} panoramix_params_t;
+
+typedef struct panoramix_s {
+    sem_t wake_up_druid;
+    sem_t pot_full;
+    pthread_mutex_t pot_access;
+    panoramix_params_t *params;
+
+    int pot;
+} panoramix_t;
+
+typedef struct villager_s {
+    int id;
+    panoramix_t *data;
+} villager_t;
+
+typedef struct druid_s {
+    panoramix_t *data;
+} druid_t;
+
+#endif
