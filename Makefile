@@ -12,7 +12,7 @@ OBJ_DEBUG    	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DEBUG)/%.o)
 
 INCLUDE      	= 	$(INCLUDE_SRC:%=-I%)
 CFLAGS       	= 	-Wall -Wextra $(INCLUDE)
-DEBUG_FLAGS  	= 	-fsanitize=address -g3 -pg $(CFLAGS)
+DEBUG_FLAGS  	= 	-fsanitize=address -g3 $(CFLAGS)
 
 NAME         	= 	panoramix
 DEBUG_NAME   	= 	debug
@@ -50,6 +50,7 @@ clean:
 fclean: clean
 	@$(RM) $(NAME)
 	@$(RM) -r $(BUILD_DIR)
+	@$(RM) -r $(BUILD_DEBUG)
 	@printf "$(COLOR_GREEN)Project cleaned!$(COLOR_RESET)\n"
 
 re: fclean all
