@@ -12,46 +12,43 @@
 #include "panoramix.h"
 #include "semaphore.h"
 #include "init.h"
+#include "free.h"
+#include "villagers.h"
+#include "druid.h"
 
-void *print_via_thread(void *raw_data)
+int panoramix(panoramix_t *data)
 {
-    pthread_t thread = pthread_self();
-    panoramix_t *data = (panoramix_t *)raw_data;
+    pthread_t *druid_thread = init_druid_thread(data);
+    pthread_t **villagers_threads = init_villagers_threads(data);
 
-    printf("Hey, here is my thread number : %lu. Data pointer : %p\n", thread, data);
-    return NULL;
-}
-
-int panoramix(panoramix_params_t *params)
-{
-    panoramix_t *data = init_panoramix_data(params);
-    pthread_t **villagers_threads = init_villagers_threads(params);
-
-    for (int i = 0; i < params->nb_villagers; i++) {
-        if (pthread_create(villagers_threads[i], NULL, print_via_thread, data) != 0) {
-            free(data);
+    if (!villagers_threads) {
+        free(villagers_threads);
+        return 84;
+    }
+    for (int i = 0; i < data->params->nb_villagers; i++) {
+        if (pthread_join(*villagers_threads[i], NULL) != 0) {
             return 84;
         }
     }
-
-    for (int i = 0; i < params->nb_villagers; i++) {
-        pthread_join(*villagers_threads[i], NULL);
-    }
-
-    if (!data)
+    if (pthread_join(*druid_thread, NULL) != 0) {
         return 84;
-    free(data);
-    free(villagers_threads);
+    }
+    free_villagers_thread(villagers_threads);
+    free_druid_thread(druid_thread);
     return 0;
 }
 
 int main(int argc, char **argv)
 {
     panoramix_params_t *panoramix_params = parse_panoramix(argc, argv);
+    panoramix_t *data = init_panoramix_data(panoramix_params);
 
-    if (!panoramix_params)
+    if (!data)
         return 84;
-    panoramix(panoramix_params);
-    free(panoramix_params);
+    if (panoramix(data) == 84) {
+        free_panoramix(data);
+        return 84;
+    }
+    free_panoramix(data);
     return 0;
 }

@@ -6,13 +6,10 @@
 ** You can even have multiple lines if you want !
 */
 
-#ifndef UNTITLED_HELP_H
-    #define UNTITLED_HELP_H
+#ifndef UNTITLED_FREE_H
+    #define UNTITLED_FREE_H
+    #include "panoramix.h"
 
-typedef enum error_code {
-    NEGETIVE_ARG,
-} error_code_t;
-
-void help(error_code_t error_code);
+void free_panoramix(panoramix_t *data);
 
 #endif

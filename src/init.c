@@ -8,12 +8,14 @@
 
 #include <stdlib.h>
 #include "panoramix.h"
+#include "villagers.h"
+#include "druid.h"
 
 panoramix_t *init_panoramix_data(panoramix_params_t *params)
 {
-    panoramix_t *data = malloc(sizeof(panoramix_t));
+    panoramix_t *data = calloc(1, sizeof(panoramix_t));
 
-    if (!data)
+    if (!data || !params)
         return NULL;
     if (sem_init(&data->wake_up_druid, 0, 0) == -1) {
         free(data);
@@ -23,7 +25,7 @@ panoramix_t *init_panoramix_data(panoramix_params_t *params)
         free(data);
         return NULL;
     }
-    if (pthread_mutex_init(&data->pot_access, NULL) == -1) {
+    if (pthread_mutex_init(&data->pot_access, NULL) != 0) {
         free(data);
         return NULL;
     }
@@ -31,22 +33,39 @@ panoramix_t *init_panoramix_data(panoramix_params_t *params)
     return data;
 }
 
-
-pthread_t **init_villagers_threads(panoramix_params_t *params)
+pthread_t **init_villagers_threads(panoramix_t *data)
 {
     pthread_t **villagers_threads = malloc(sizeof(pthread_t *) *
-        (params->nb_villagers + 1));
+        (data->params->nb_villagers + 1));
+    villager_t *villager = NULL;
 
-    for (int i = 0; i < params->nb_villagers; i++) {
+    if (!villagers_threads || !data)
+        return NULL;
+    for (int i = 0; i < data->params->nb_villagers; i++) {
         villagers_threads[i] = malloc(sizeof(pthread_t));
-        if (!villagers_threads[i]) {
+        villager = create_villager(i, data);
+        if (!villager || !villagers_threads[i] ||
+            pthread_create(villagers_threads[i], NULL, villager_work, villager) != 0) {
+            free(villager);
             free(villagers_threads);
             return NULL;
         }
     }
-
-    if (!villagers_threads)
-        return NULL;
-    villagers_threads[params->nb_villagers] = NULL;
+    villagers_threads[data->params->nb_villagers] = NULL;
     return villagers_threads;
+}
+
+pthread_t *init_druid_thread(panoramix_t *data)
+{
+    pthread_t *druid_thread = malloc(sizeof(pthread_t));
+    druid_t *druid = create_druid(data);
+
+    if (!druid_thread || !druid || !data)
+        return NULL;
+    if (pthread_create(druid_thread, NULL, druid_work, druid) != 0) {
+        free(druid);
+        free(druid_thread);
+        return NULL;
+    }
+    return druid_thread;
 }

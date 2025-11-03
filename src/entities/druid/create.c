@@ -9,13 +9,12 @@
 #include <stdlib.h>
 #include "panoramix.h"
 
-villager_t *create_villager(int id, panoramix_t *data)
+druid_t *create_druid(panoramix_t *data)
 {
-    villager_t *villager = malloc(sizeof(villager_t));
+    druid_t *druid = malloc(sizeof(druid_t));
 
-    if (!villager)
+    if (!druid)
         return NULL;
-    villager->id = id;
-    villager->data = data;
-    return villager;
+    druid->data = data;
+    return druid;
 }

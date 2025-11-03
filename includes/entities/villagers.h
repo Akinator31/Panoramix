@@ -10,6 +10,8 @@
     #define UNTITLED_VILLAGERS_H
     #include "panoramix.h"
 
-villager_t *create_villager(panoramix_t *data);
+villager_t *create_villager(int id, panoramix_t *data);
+void *villager_work(void *raw_data);
+void free_villagers_thread(pthread_t **villagers_threads);
 
 #endif
