@@ -40,6 +40,11 @@ void *no_more_ingredients(druid_t *druid)
 {
     set_druid_dead(druid);
     printf("Druid: I'm out of viscum. I'm going back to... zZz\n");
+    druid->data->druid_called = 0;
+    if (sem_post(&druid->data->pot_full) == -1) {
+        free(druid);
+        return NULL;
+    }
     free(druid);
     return NULL;
 }

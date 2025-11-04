@@ -21,10 +21,8 @@ int panoramix(panoramix_t *data)
     pthread_t *druid_thread = init_druid_thread(data);
     pthread_t **villagers_threads = init_villagers_threads(data);
 
-    if (!villagers_threads) {
-        free(villagers_threads);
+    if (!villagers_threads)
         return 84;
-    }
     for (int i = 0; i < data->params->nb_villagers; i++) {
         if (pthread_join(*villagers_threads[i], NULL) != 0) {
             return 84;

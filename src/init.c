@@ -57,6 +57,8 @@ pthread_t **init_villagers_threads(panoramix_t *data)
     for (int i = 0; i < data->params->nb_villagers; i++) {
         villagers_threads[i] = malloc(sizeof(pthread_t));
         villager = create_villager(i, data);
+        if (!villager)
+            return NULL;
         printf("Villager %d: Going into battle!\n", villager->id);
         if (!villager || !villagers_threads[i] ||
             pthread_create(villagers_threads[i], NULL, villager_work, villager)
