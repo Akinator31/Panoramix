@@ -16,5 +16,6 @@ druid_t *create_druid(panoramix_t *data)
     if (!druid)
         return NULL;
     druid->data = data;
+    druid->nb_refills_left = data->params->nb_refills;
     return druid;
 }

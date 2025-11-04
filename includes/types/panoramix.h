@@ -21,18 +21,27 @@ typedef struct panoramix_params_s {
 typedef struct panoramix_s {
     sem_t wake_up_druid;
     sem_t pot_full;
-    pthread_mutex_t pot_access;
-    panoramix_params_t *params;
 
+    pthread_mutex_t pot_access;
+    pthread_mutex_t druid_life_access;
+    pthread_mutex_t druid_is_called_access;
+
+    panoramix_params_t *params;
+    
+    int druid_called;
+    int villagers_alive;
+    int druid_alive;
     int pot;
 } panoramix_t;
 
 typedef struct villager_s {
     int id;
+    int nb_fights;
     panoramix_t *data;
 } villager_t;
 
 typedef struct druid_s {
+    int nb_refills_left;
     panoramix_t *data;
 } druid_t;
 

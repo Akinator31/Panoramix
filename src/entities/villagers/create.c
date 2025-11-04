@@ -13,9 +13,10 @@ villager_t *create_villager(int id, panoramix_t *data)
 {
     villager_t *villager = malloc(sizeof(villager_t));
 
-    if (!villager)
+    if (!villager || !data)
         return NULL;
     villager->id = id;
     villager->data = data;
+    villager->nb_fights = data->params->nb_fights;
     return villager;
 }

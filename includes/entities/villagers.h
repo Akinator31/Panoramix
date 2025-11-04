@@ -13,5 +13,6 @@
 villager_t *create_villager(int id, panoramix_t *data);
 void *villager_work(void *raw_data);
 void free_villagers_thread(pthread_t **villagers_threads);
+int is_druid_alive(villager_t *villager);
 
 #endif

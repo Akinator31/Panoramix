@@ -30,6 +30,9 @@ int panoramix(panoramix_t *data)
             return 84;
         }
     }
+    data->villagers_alive = 0;
+    if (sem_post(&data->wake_up_druid) != 0)
+        return 84;
     if (pthread_join(*druid_thread, NULL) != 0) {
         return 84;
     }
