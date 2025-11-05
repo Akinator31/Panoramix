@@ -9,12 +9,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "panoramix.h"
+#include "display.h"
 
 int refill_pot(druid_t *druid)
 {
     int refills_left = druid->nb_refills_left;
 
-    printf("Druid: Ah! Yes, yes, I'm awake! Working on it! Beware I can only make %d more refills after this one.\n", refills_left - 1);
+    display_cooking(druid);
     if (pthread_mutex_lock(&druid->data->pot_access) != 0)
         return -1;
     druid->data->pot = druid->data->params->pot_size;
@@ -39,7 +40,7 @@ int set_druid_dead(druid_t *druid)
 void *no_more_ingredients(druid_t *druid)
 {
     set_druid_dead(druid);
-    printf("Druid: I'm out of viscum. I'm going back to... zZz\n");
+    display_no_more_ingredients(druid);
     druid->data->druid_called = 0;
     if (sem_post(&druid->data->pot_full) == -1) {
         free(druid);
@@ -73,7 +74,9 @@ void *druid_work(void *raw_data)
         free(druid);
         return NULL;
     }
+    pthread_mutex_lock(&druid->data->druid_is_called_access);
     druid->data->druid_called = 0;
+    pthread_mutex_unlock(&druid->data->druid_is_called_access);
     return druid_work(druid);
 }
 

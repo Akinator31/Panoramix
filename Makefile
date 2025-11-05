@@ -1,17 +1,20 @@
 SRC_DIR     	=	src
+LIB_DIR			=	lib
 BUILD_DIR   	=	build
 BUILD_DEBUG 	=	build-debug
 INCLUDE_DIRS	=	includes
 
 SRC          	=	$(shell find $(SRC_DIR) -name "*.c")
+LIB_SRC			=	$(shell find $(LIB_DIR) -name "*.c")
 INCLUDE_SRC		=	$(shell find $(INCLUDE_DIRS) -type d)
 
 CC           	= 	epiclang
 OBJ          	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
+LIB_OBJ			=	$(LIB_SRC:$(LIB_DIR)/%.c=$(BUILD_DIR)/lib/%.o)
 OBJ_DEBUG    	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DEBUG)/%.o)
 
 INCLUDE      	= 	$(INCLUDE_SRC:%=-I%)
-CFLAGS       	= 	-Wall -Wextra $(INCLUDE)
+CFLAGS       	= 	-Wall -Wextra $(INCLUDE) -pthread -g -Og
 DEBUG_FLAGS  	= 	-fsanitize=address -g3 -g $(CFLAGS)
 
 NAME         	= 	panoramix
@@ -22,6 +25,11 @@ COLOR_GREEN  = \033[1;32m
 COLOR_RESET  = \033[0m
 
 all: $(NAME)
+
+$(BUILD_DIR)/lib/%.o: $(LIB_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@printf "$(COLOR_RED)Building library object $<$(COLOR_RESET)"
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)

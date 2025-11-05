@@ -25,6 +25,7 @@ typedef struct panoramix_s {
     pthread_mutex_t pot_access;
     pthread_mutex_t druid_life_access;
     pthread_mutex_t druid_is_called_access;
+    pthread_mutex_t print_access;
 
     panoramix_params_t *params;
     

@@ -11,6 +11,8 @@
 #include "panoramix.h"
 #include "villagers.h"
 #include "druid.h"
+#include "display.h"
+#include <unistd.h>
 
 panoramix_t *init_panoramix_data(panoramix_params_t *params)
 {
@@ -38,6 +40,10 @@ panoramix_t *init_panoramix_data(panoramix_params_t *params)
         free(data);
         return NULL;
     }
+    if (pthread_mutex_init(&data->print_access, NULL) != 0) {
+        free(data);
+        return NULL;
+    }
     data->params = params;
     data->druid_called = 0;
     data->pot = params->pot_size;
@@ -59,10 +65,9 @@ pthread_t **init_villagers_threads(panoramix_t *data)
         villager = create_villager(i, data);
         if (!villager)
             return NULL;
-        printf("Villager %d: Going into battle!\n", villager->id);
         if (!villager || !villagers_threads[i] ||
-            pthread_create(villagers_threads[i], NULL, villager_work, villager)
-            != 0) {
+            (pthread_create(villagers_threads[i], NULL, villager_work, villager)
+            != 0)) {
             free(villager);
             free(villagers_threads);
             return NULL;
@@ -84,6 +89,6 @@ pthread_t *init_druid_thread(panoramix_t *data)
         free(druid_thread);
         return NULL;
     }
-    printf("Druid: I'm ready... but sleepy...\n");
+    display_druid_join(druid);
     return druid_thread;
 }

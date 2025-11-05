@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include "panoramix.h"
 #include "villagers.h"
+#include "display.h"
 
 int is_druid_called(villager_t *villager)
 {
@@ -30,16 +31,13 @@ int is_druid_called(villager_t *villager)
 int call_druid(villager_t *villager)
 {
     if (is_druid_called(villager)) {
-        if (sem_wait(&villager->data->pot_full) != 0)
-            return -1;
         return 1;
     }
-    printf("Villager %d: Hey Pano wake up! We need more potion.\n", villager->id);
+    display_pano_wakeup(villager);
     if (sem_post(&villager->data->wake_up_druid) != 0)
         return -1;
     if (sem_wait(&villager->data->pot_full) != 0)
         return -1;
-    printf("Villager %d: finished waiting for druid\n", villager->id);
     return 1;
 }
 
@@ -60,15 +58,12 @@ int get_pot(villager_t *villager)
 int get_some_potion(villager_t *villager)
 {
     int druid_life = 0;
-    int pot_status = 0;
+    int pot_status = get_pot(villager);
     int call_result = 0;
 
     while (1) {
-        usleep(rand() % 10000);
         pot_status = get_pot(villager);
         if (pot_status > 0) {
-            usleep(rand() % 10000);
-            printf("Villager %d: I need a drink... I see %d servings left.\n", villager->id, pot_status);
             return 1;
         } else {
             druid_life = is_druid_alive(villager);
@@ -85,7 +80,6 @@ int is_druid_alive(villager_t *villager)
 {
     int result = 0;
 
-    printf("Villager %d: Checking if druid is alive...\n", villager->id);
     if (pthread_mutex_lock(&villager->data->druid_life_access) != 0)
         return -1;
     result = villager->data->druid_alive;
@@ -99,7 +93,9 @@ void *villager_work(void *raw_data)
     villager_t *villager = (villager_t *)raw_data;
     int potion_result = 0;
 
+    display_villager_join(villager);
     while (villager->nb_fights != 0 && is_druid_alive(villager)) {
+        display_need_to_drink(villager, get_pot(villager));
         potion_result = get_some_potion(villager);
         if (potion_result == -1) {
             free(villager);
@@ -108,10 +104,9 @@ void *villager_work(void *raw_data)
         if (!potion_result)
             break;
         villager->nb_fights -= 1;
-        usleep(rand() % 10000);
-        printf("Villager %d: Take that roman scum! Only %d left.\n", villager->id, villager->nb_fights);
+        display_fight(villager);
     }
-    printf("Villager %d: I'm going to sleep now.\n", villager->id);
+    display_sleep(villager);
     free(villager);
     return NULL;
 }
