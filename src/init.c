@@ -44,6 +44,14 @@ panoramix_t *init_panoramix_data(panoramix_params_t *params)
         free(data);
         return NULL;
     }
+    if (pthread_mutex_init(&data->villagers_life_access, NULL) != 0) {
+        free(data);
+        return NULL;
+    }
+    if (pthread_mutex_init(&data->wake_up_druid_access, NULL) != 0) {
+        free(data);
+        return NULL;
+    }
     data->params = params;
     data->druid_called = 0;
     data->pot = params->pot_size;

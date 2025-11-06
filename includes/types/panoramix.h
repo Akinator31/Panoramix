@@ -8,6 +8,7 @@
 
 #ifndef UNTITLED_PANORAMIX_H
     #define UNTITLED_PANORAMIX_H
+    #define CHECK(call, clean) ((call) == -1 ? (clean, 1) : 0)
     #include <semaphore.h>
     #include <pthread.h>
 
@@ -26,6 +27,8 @@ typedef struct panoramix_s {
     pthread_mutex_t druid_life_access;
     pthread_mutex_t druid_is_called_access;
     pthread_mutex_t print_access;
+    pthread_mutex_t wake_up_druid_access;
+    pthread_mutex_t villagers_life_access;
 
     panoramix_params_t *params;
     

@@ -15,7 +15,7 @@ OBJ_DEBUG    	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DEBUG)/%.o)
 
 INCLUDE      	= 	$(INCLUDE_SRC:%=-I%)
 CFLAGS       	= 	-Wall -Wextra $(INCLUDE) -pthread -g -Og
-DEBUG_FLAGS  	= 	-fsanitize=address -g3 -g $(CFLAGS)
+DEBUG_FLAGS  	= 	-fsanitize=thread -g $(CFLAGS)
 
 NAME         	= 	panoramix
 DEBUG_NAME   	= 	debug

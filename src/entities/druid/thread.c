@@ -8,13 +8,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "panoramix.h"
 #include "display.h"
 
 int refill_pot(druid_t *druid)
 {
-    int refills_left = druid->nb_refills_left;
-
     display_cooking(druid);
     if (pthread_mutex_lock(&druid->data->pot_access) != 0)
         return -1;
@@ -50,34 +49,47 @@ void *no_more_ingredients(druid_t *druid)
     return NULL;
 }
 
+int is_villagers_alive(druid_t *druid)
+{
+    int result = 0;
+
+    if (pthread_mutex_lock(&druid->data->villagers_life_access) != 0)
+        return 0;
+    result = druid->data->villagers_alive;
+    if (pthread_mutex_unlock(&druid->data->villagers_life_access) != 0)
+        return 0;
+    return result;
+}
+
+int safe_int_set(int *var, int new_value, pthread_mutex_t *guard)
+{
+    if (pthread_mutex_lock(guard) != 0)
+        return -1;
+    *var = new_value;
+    if (pthread_mutex_unlock(guard) != 0)
+        return -1;
+    return 0;
+}
+
 void *druid_work(void *raw_data)
 {
     druid_t *druid = (druid_t *)raw_data;
-    int refill_pot_result = 0;
+    int res = 0;
 
-    if (sem_wait(&druid->data->wake_up_druid) == -1) {
-        free(druid);
-        return NULL;
+    while (1) {
+        if (!is_villagers_alive(druid))
+            break;
+        if (CHECK(sem_wait(&druid->data->wake_up_druid), free(druid)))
+            return NULL;
+        res = refill_pot(druid);
+        if (!res)
+            return no_more_ingredients(druid);
+        if (CHECK(res, free(druid)))
+            return NULL;
+        if (CHECK(sem_post(&druid->data->pot_full), free(druid)))
+            return NULL;
     }
-    if (!druid->data->villagers_alive) {
-        free(druid);
-        return NULL;
-    }
-    refill_pot_result = refill_pot(druid);
-    if (refill_pot_result == 0)
-        return no_more_ingredients(druid);
-    if (refill_pot_result == -1) {
-        free(druid);
-        return NULL;
-    }
-    if (sem_post(&druid->data->pot_full) == -1) {
-        free(druid);
-        return NULL;
-    }
-    pthread_mutex_lock(&druid->data->druid_is_called_access);
-    druid->data->druid_called = 0;
-    pthread_mutex_unlock(&druid->data->druid_is_called_access);
-    return druid_work(druid);
+    return NULL;
 }
 
 void free_druid_thread(pthread_t *druid_thread)
