@@ -8,7 +8,7 @@ SRC          	=	$(shell find $(SRC_DIR) -name "*.c")
 LIB_SRC			=	$(shell find $(LIB_DIR) -name "*.c")
 INCLUDE_SRC		=	$(shell find $(INCLUDE_DIRS) -type d)
 
-CC           	= 	epiclang
+CC           	= 	clang
 OBJ          	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 LIB_OBJ			=	$(LIB_SRC:$(LIB_DIR)/%.c=$(BUILD_DIR)/lib/%.o)
 OBJ_DEBUG    	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DEBUG)/%.o)
@@ -61,6 +61,8 @@ fclean: clean
 	@$(RM) -r $(BUILD_DEBUG)
 	@printf "$(COLOR_GREEN)Project cleaned!$(COLOR_RESET)\n"
 
-re: fclean all
+re:
+	$(MAKE) fclean
+	$(MAKE) all
 
 .PHONY: all clean fclean re
