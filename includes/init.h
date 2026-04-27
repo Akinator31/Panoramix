@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** Panoramix
 ** File description:
 ** No file there, just an epitech header example .
@@ -7,8 +7,8 @@
 */
 
 #ifndef UNTITLED_INIT_H
-    #define UNTITLED_INIT_H
-    #include "panoramix.h"
+#define UNTITLED_INIT_H
+#include "panoramix.h"
 
 panoramix_t *init_panoramix_data(panoramix_params_t *params);
 pthread_t **init_villagers_threads(panoramix_t *data);

@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** Panoramix
 ** File description:
 ** No file there, just an epitech header example .

@@ -1,18 +1,15 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** Panoramix
 ** File description:
 ** No file there, just an epitech header example .
 ** You can even have multiple lines if you want !
 */
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <unistd.h>
 #include "panoramix.h"
 #include "villagers.h"
-#include "druid.h"
 #include "pot.h"
 #include "display.h"
 
