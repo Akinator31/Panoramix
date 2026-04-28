@@ -1,3 +1,10 @@
+##
+## EPITECH PROJECT, 2026
+## Makefile
+## File description:
+## Makefile for panoramix project
+##
+
 SRC_DIR     	=	src
 LIB_DIR			=	lib
 BUILD_DIR   	=	build
@@ -8,7 +15,7 @@ SRC          	=	$(shell find $(SRC_DIR) -name "*.c")
 LIB_SRC			=	$(shell find $(LIB_DIR) -name "*.c")
 INCLUDE_SRC		=	$(shell find $(INCLUDE_DIRS) -type d)
 
-CC           	= 	clang
+CC           	= 	epiclang
 OBJ          	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 LIB_OBJ			=	$(LIB_SRC:$(LIB_DIR)/%.c=$(BUILD_DIR)/lib/%.o)
 OBJ_DEBUG    	= 	$(SRC:$(SRC_DIR)/%.c=$(BUILD_DEBUG)/%.o)

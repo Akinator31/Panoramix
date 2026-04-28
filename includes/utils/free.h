@@ -11,5 +11,6 @@
 #include "panoramix.h"
 
 void free_panoramix(panoramix_t *data);
+void my_free(int count, ...);
 
 #endif

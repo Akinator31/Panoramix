@@ -22,19 +22,12 @@ typedef struct panoramix_params_s {
 typedef struct panoramix_s {
   sem_t wake_up_druid;
   sem_t pot_full;
-
   pthread_mutex_t pot_access;
-  pthread_mutex_t druid_life_access;
-  pthread_mutex_t druid_is_called_access;
   pthread_mutex_t print_access;
-  pthread_mutex_t wake_up_druid_access;
-  pthread_mutex_t villagers_life_access;
-
   panoramix_params_t *params;
-
   int druid_called;
-  int villagers_alive;
   int druid_alive;
+  int villagers_waiting;
   int pot;
 } panoramix_t;
 

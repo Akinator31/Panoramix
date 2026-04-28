@@ -7,12 +7,38 @@
 */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include "panoramix.h"
 #include "villagers.h"
 #include "druid.h"
 #include "display.h"
+#include "free.h"
 #include <unistd.h>
+
+int init_panoramix_mutexes(panoramix_t *data)
+{
+    if (pthread_mutex_init(&data->pot_access, NULL) != 0) {
+        free(data);
+        return 0;
+    }
+    if (pthread_mutex_init(&data->print_access, NULL) != 0) {
+        free(data);
+        return 0;
+    }
+    return 1;
+}
+
+int init_panoramix_semaphores(panoramix_t *data)
+{
+    if (sem_init(&data->wake_up_druid, 0, 0) == -1) {
+        free(data);
+        return 0;
+    }
+    if (sem_init(&data->pot_full, 0, 0) == -1) {
+        free(data);
+        return 0;
+    }
+    return 1;
+}
 
 panoramix_t *init_panoramix_data(panoramix_params_t *params)
 {
@@ -20,42 +46,11 @@ panoramix_t *init_panoramix_data(panoramix_params_t *params)
 
     if (!data || !params)
         return NULL;
-    if (sem_init(&data->wake_up_druid, 0, 0) == -1) {
-        free(data);
+    if (!init_panoramix_mutexes(data) || !init_panoramix_semaphores(data))
         return NULL;
-    }
-    if (sem_init(&data->pot_full, 0, 1) == -1) {
-        free(data);
-        return NULL;
-    }
-    if (pthread_mutex_init(&data->pot_access, NULL) != 0) {
-        free(data);
-        return NULL;
-    }
-    if (pthread_mutex_init(&data->druid_life_access, NULL) != 0) {
-        free(data);
-        return NULL;
-    }
-    if (pthread_mutex_init(&data->druid_is_called_access, NULL) != 0) {
-        free(data);
-        return NULL;
-    }
-    if (pthread_mutex_init(&data->print_access, NULL) != 0) {
-        free(data);
-        return NULL;
-    }
-    if (pthread_mutex_init(&data->villagers_life_access, NULL) != 0) {
-        free(data);
-        return NULL;
-    }
-    if (pthread_mutex_init(&data->wake_up_druid_access, NULL) != 0) {
-        free(data);
-        return NULL;
-    }
     data->params = params;
     data->druid_called = 0;
     data->pot = params->pot_size;
-    data->villagers_alive = 1;
     data->druid_alive = 1;
     return data;
 }
@@ -76,8 +71,7 @@ pthread_t **init_villagers_threads(panoramix_t *data)
         if (!villager || !villagers_threads[i] ||
             (pthread_create(villagers_threads[i], NULL, villager_work, villager)
             != 0)) {
-            free(villager);
-            free(villagers_threads);
+            my_free(2, villager, villagers_threads);
             return NULL;
         }
     }
@@ -93,8 +87,7 @@ pthread_t *init_druid_thread(panoramix_t *data)
     if (!druid_thread || !druid || !data)
         return NULL;
     if (pthread_create(druid_thread, NULL, druid_work, druid) != 0) {
-        free(druid);
-        free(druid_thread);
+        my_free(2, druid_thread, druid_thread);
         return NULL;
     }
     display_druid_join(druid);
