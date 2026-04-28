@@ -7,8 +7,8 @@
 */
 
 #ifndef UNTITLED_DRUID_H
-#define UNTITLED_DRUID_H
-#include "panoramix.h"
+    #define UNTITLED_DRUID_H
+    #include "panoramix.h"
 
 druid_t *create_druid(panoramix_t *data);
 void *druid_work(void *raw_data);

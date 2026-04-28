@@ -7,8 +7,8 @@
 */
 
 #ifndef UNTITLED_FREE_H
-#define UNTITLED_FREE_H
-#include "panoramix.h"
+    #define UNTITLED_FREE_H
+    #include "panoramix.h"
 
 void free_panoramix(panoramix_t *data);
 void my_free(int count, ...);

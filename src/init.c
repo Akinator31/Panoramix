@@ -70,7 +70,7 @@ pthread_t **init_villagers_threads(panoramix_t *data)
             return NULL;
         if (!villager || !villagers_threads[i] ||
             (pthread_create(villagers_threads[i], NULL, villager_work, villager)
-            != 0)) {
+                != 0)) {
             my_free(2, villager, villagers_threads);
             return NULL;
         }

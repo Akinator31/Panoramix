@@ -40,13 +40,31 @@ void *no_more_ingredients(druid_t *druid)
     return NULL;
 }
 
+static int wait_druid_signal(druid_t *druid)
+{
+    if (sem_wait(&druid->data->wake_up_druid) != 0) {
+        free(druid);
+        return -1;
+    }
+    return 0;
+}
+
+static int notify_villagers(druid_t *druid)
+{
+    if (sem_post(&druid->data->pot_full) != 0) {
+        free(druid);
+        return -1;
+    }
+    return 0;
+}
+
 void *druid_work(void *raw_data)
 {
     druid_t *druid = (druid_t *)raw_data;
     int res = 0;
 
     while (1) {
-        if (CHECK(sem_wait(&druid->data->wake_up_druid), free(druid)))
+        if (wait_druid_signal(druid) != 0)
             return NULL;
         if (!druid->data->druid_alive) {
             free(druid);
@@ -55,9 +73,11 @@ void *druid_work(void *raw_data)
         res = refill_pot(druid);
         if (!res)
             return no_more_ingredients(druid);
-        if (CHECK(res, free(druid)))
+        if (res == -1) {
+            free(druid);
             return NULL;
-        if (CHECK(sem_post(&druid->data->pot_full), free(druid)))
+        }
+        if (notify_villagers(druid) != 0)
             return NULL;
     }
 }

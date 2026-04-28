@@ -7,8 +7,8 @@
 */
 
 #ifndef UNTITLED_VILLAGERS_H
-#define UNTITLED_VILLAGERS_H
-#include "panoramix.h"
+    #define UNTITLED_VILLAGERS_H
+    #include "panoramix.h"
 
 villager_t *create_villager(int id, panoramix_t *data);
 void *villager_work(void *raw_data);

@@ -6,8 +6,8 @@
 */
 
 #ifndef DISPLAY_H
-#define DISPLAY_H
-#include "panoramix.h"
+    #define DISPLAY_H
+    #include "panoramix.h"
 
 void display_pano_wakeup(villager_t *villager);
 void display_villager_join(villager_t *villager);

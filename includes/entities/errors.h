@@ -5,8 +5,8 @@
 ** errors
 */
 
-#ifndef ERRORS_H_
-#define ERRORS_H
+#ifndef ERRORS_H
+    #define ERRORS_H
 
 void handle_villager_failure(villager_t *villager);
 
