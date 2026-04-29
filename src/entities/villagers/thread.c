@@ -30,7 +30,8 @@ int drink(villager_t *villager)
     if (pot > 0)
         return 1;
     if (!wake_up_druid(villager))
-        return 0;
+        if (villager->data->pot == 0)
+            return 0;
     get_pot_from_villager(villager);
     return 1;
 }
